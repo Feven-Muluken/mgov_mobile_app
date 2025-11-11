@@ -1,0 +1,101 @@
+plugins {
+    id("com.android.application")
+    id("kotlin-android")
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id("dev.flutter.flutter-gradle-plugin")
+}
+
+android {
+    namespace = "com.example.mgov_apps"
+    compileSdk = flutter.compileSdkVersion
+    //ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
+
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+
+    dependencies {
+        //coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.2.5'
+        coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.2'
+        // Import the Firebase BoM
+        implementation(platform("com.google.firebase:firebase-bom:32.7.4")) // Use the latest stable version
+        
+        // Add the Firebase dependency for Analytics (recommended)
+        implementation("com.google.firebase:firebase-analytics-ktx")
+
+        // Add dependencies for any other Firebase products you need
+        // For example:
+        // implementation("com.google.firebase:firebase-auth-ktx")
+        // implementation("com.google.firebase:firebase-firestore-ktx")
+    }
+
+    defaultConfig {
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId = "com.example.mgov_apps"
+        // You can update the following values to match your application needs.
+        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        //minSdk = flutter.minSdkVersion
+
+        minSdk = 23
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
+
+    flavorDimensions "app"
+
+    productFlavors {
+        gov_connect {
+            dimension "app"
+            applicationId "com.mgov.govconnect"
+            resValue "string", "app_name", "My Gov Connect"
+        }
+        gebeta {
+            dimension "app"
+            applicationId "com.mgov.gebeta"
+            resValue "string", "app_name", "Gebeta Lehager"
+        }
+        snap {
+            dimension "app"
+            applicationId "com.mgov.snap"
+            resValue "string", "app_name", "Snap & Send"
+        }
+        yellow {
+            dimension "app"
+            applicationId "com.mgov.yellowpages"
+            resValue "string", "app_name", "Gov Yellow Pages"
+        }
+        community {
+            dimension "app"
+            applicationId "com.mgov.community"
+            resValue "string", "app_name", "Community Engagement"
+        }
+        admin {
+            dimension "app"
+            applicationId "com.mgov.admin"
+            resValue "string", "app_name", "Admin Dashboard"
+        }
+    }
+
+    buildTypes {
+        release {
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+}
+
+flutter {
+    source = "../.."
+}
+
+
+apply plugin: 'com.google.gms.google-services'

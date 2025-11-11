@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "388576582677",
+    "project_id": "mygovconnect-321e5",
+    "storage_bucket": "mygovconnect-321e5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:388576582677:android:2d5b0c8346735a4c2c021c",
+        "android_client_info": {
+          "package_name": "com.mgov.govconnect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxt8hG51fjXj3SbdwU5MJPWQmna7heTHw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
