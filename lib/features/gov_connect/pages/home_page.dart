@@ -6,6 +6,7 @@ import 'package:mgov_apps/features/gov_connect/pages/alert_page.dart' as alert_p
 import 'package:mgov_apps/features/gov_connect/pages/emergency_contacts_page.dart';
 import 'package:mgov_apps/features/gov_connect/pages/filter_search_modal.dart';
 import 'package:mgov_apps/features/gov_connect/pages/news_detail_page.dart';
+import 'package:mgov_apps/features/gov_connect/pages/notifications_page.dart';
 import 'package:mgov_apps/features/gov_connect/pages/news_page.dart' as news_page;
 import 'package:mgov_apps/features/gov_connect/pages/profile_page.dart';
 import 'package:mgov_apps/features/gov_connect/pages/surveys_polls_page.dart';
@@ -519,6 +520,7 @@ AppBar _buildAppBar(BuildContext context) {
       actions: widget.isGuest 
         ? [] // No settings/profile button for guests
         : [
+            const NotificationBell(),
             IconButton(
               icon: const Icon(Icons.settings),
               onPressed: () {

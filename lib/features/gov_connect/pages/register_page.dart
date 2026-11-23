@@ -32,6 +32,15 @@ final _formKey = GlobalKey<FormState>();
   Map<String, dynamic>? responseData;
   String? registeredPhone;
 
+  String _normalizePhoneNumber(String phoneNumber) {
+    final trimmed = phoneNumber.trim();
+    // If phone number starts with "09", remove the leading "0" and add "+251"
+    if (trimmed.startsWith('09')) {
+      return "+251${trimmed.substring(1)}";
+    }
+    // Otherwise, just add "+251" prefix
+    return "+251$trimmed";
+  }
 
   //final TextEditingController otpController = TextEditingController();
   final List<TextEditingController> _otpControllers = List.generate(6, (_) => TextEditingController());
@@ -61,10 +70,11 @@ void _registerUser() async {
   );
 
   try {
+    final normalizedPhone = _normalizePhoneNumber(_phoneController.text);
     final response = await apiService.register(
       userName: _fullNameController.text.trim(),
       email: _emailController.text.trim(),
-      phone_number: "+251${(_phoneController.text.trim())}",
+      phone_number: normalizedPhone,
       password: _passwordController.text.trim(),
       confirmPassword: _confirmPasswordController.text.trim(),
       firstName: _firstNameController.text.trim(),
@@ -80,7 +90,7 @@ void _registerUser() async {
     if (response.success && response.data != null) {
       setState(() {
         responseData = response.data;
-        registeredPhone = "+251${(_phoneController.text.trim())}";
+        registeredPhone = normalizedPhone;
       });
 
       // Save response data
@@ -711,20 +721,20 @@ Widget build(BuildContext context) {
           ],
         ),
           const SizedBox(height: 12),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () {
-                // Handle forgot password logic
-              },
-              child: const Text(
-                "Forgot Password?",
-                style: TextStyle(
-                  color: Color(0xFF003399),
-                ),
-              ),
-            ),
-          ),
+          // Align(
+          //   alignment: Alignment.centerRight,
+          //   child: TextButton(
+          //     onPressed: () {
+          //       // Handle forgot password logic
+          //     },
+          //     child: const Text(
+          //       "Forgot Password?",
+          //       style: TextStyle(
+          //         color: Color(0xFF003399),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           const SizedBox(height: 24),
           _buildSignUpButton(context),
           const SizedBox(height: 16),

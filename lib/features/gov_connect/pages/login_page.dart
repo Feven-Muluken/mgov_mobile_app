@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mgov_apps/core/utils/local_storage_stub.dart';
 import 'package:mgov_apps/core/localization/language_provider.dart';
 import 'package:mgov_apps/features/gov_connect/core/api_service.dart';
+import 'package:mgov_apps/modules/notifications/notification_service.dart';
 import 'package:mgov_apps/features/gov_connect/pages/forget_password_page.dart';
 
 class SignInPage extends StatefulWidget {
@@ -51,7 +52,9 @@ class _SignInPageState extends State<SignInPage> with TickerProviderStateMixin{
         await saveToLocalStorage('refresh_token', refreshToken);
         await saveToLocalStorage('user_data', jsonEncode(user));
         // Clear guest flag when user logs in
-        await removeFromLocalStorage('is_guest');  
+        await removeFromLocalStorage('is_guest');
+        // Save this phone's push token on the backend for the user who just logged in
+        NotificationService.registerTokenWithBackend();
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.stringsNoListen.success)),

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:mgov_apps/core/utils/local_storage_stub.dart';
 import 'features/gov_connect/gov_connect_app.dart';
@@ -11,15 +12,41 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  await FirebaseInitializer.initialize();
-  await NotificationService.initialize();
-  //_printToken();
-  await _storeToken();
-  await Hive.initFlutter();
-  String? user = await getFromLocalStorage('user_data'); 
-  var settingsBox = await Hive.openBox('settings');
-  bool hasSeenOnboarding = settingsBox.get('hasSeenOnboarding', defaultValue: false) ?? false;
+
+  // Load what the first screen needs. Never let a failure here leave a blank screen.
+  String? user;
+  bool hasSeenOnboarding = false;
+  try {
+    await Hive.initFlutter();
+    user = await getFromLocalStorage('user_data');
+    var settingsBox = await Hive.openBox('settings');
+    hasSeenOnboarding = settingsBox.get('hasSeenOnboarding', defaultValue: false) ?? false;
+  } catch (e) {
+    debugPrint('Startup storage error: $e');
+  }
+
+  // Show the UI first.
   runApp(GovConnectApp(hasSeenOnboarding: hasSeenOnboarding, user: user));
+
+  // Firebase and notifications start afterwards and can fail without breaking the app.
+  _startFirebaseServices();
+}
+
+Future<void> _startFirebaseServices() async {
+  try {
+    await FirebaseInitializer.initialize();
+    if (Firebase.apps.isEmpty) {
+      debugPrint('Firebase is not initialized; notifications are disabled.');
+      return;
+    }
+    await NotificationService.initialize();
+    //_printToken();
+    // Already logged in from a previous session: make sure the backend has this phone's token.
+    await NotificationService.registerTokenWithBackend();
+    await _storeToken();
+  } catch (e) {
+    debugPrint('Firebase/notification setup failed: $e');
+  }
 }
 
 Future<void> _printToken() async {

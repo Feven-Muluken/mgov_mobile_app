@@ -49,6 +49,12 @@ class ApiConstants {
   static const String emergencyContactsEndpoint = '/emergency-contacts/';
   static const String emergencyContactsByRegionEndpoint = '/emergency-contacts/region/';
   
+  // Notifications Endpoints
+  static const String notificationsListEndpoint = '/notifications/list/';
+  static const String notificationsMarkAllReadEndpoint = '/notifications/mark-all-read/';
+  static const String deviceTokenEndpoint = '/notifications/device-token/';
+  static String notificationMarkReadEndpoint(int id) => '/notifications/$id/read/';
+
   // Directory Listings Endpoints
   static const String directoryListingsEndpoint = '/directory/listings/';
   

@@ -41,8 +41,9 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> with TickerProv
   
 
   try {
+    final normalizedPhone = _normalizePhoneNumber(_phoneNumberController.text);
     final response = await apiService.verifyOtp(  
-      phone: "+251${(_phoneNumberController.text.trim())}",
+      phone: normalizedPhone,
       otp: otp,
     );
     
@@ -57,19 +58,34 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> with TickerProv
         SnackBar(content: Text(context.stringsNoListen.success)),
       );
 
-      final phoneNumber = "+251${(_phoneNumberController.text.trim())}";
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => PasswordResetPage(
-            phoneNumber: phoneNumber,
+            phoneNumber: normalizedPhone,
             otpCode: otp,
           ),
         ),
       );  // redirect after verification
     } else {
       // Handle different error types
-      String errorMessage = response.message;
+      // Convert message to String if it's not already a String
+      String errorMessage;
+      if (response.message is Map) {
+        // If it's a Map, try to extract meaningful error messages
+        final errorMap = response.message as Map;
+        if (errorMap.containsKey('message')) {
+          errorMessage = errorMap['message'].toString();
+        } else if (errorMap.containsKey('error')) {
+          errorMessage = errorMap['error'].toString();
+        } else {
+          errorMessage = errorMap.toString();
+        }
+      } else if (response.message is List) {
+        errorMessage = (response.message as List).join(', ');
+      } else {
+        errorMessage = response.message.toString();
+      }
       
       // Check if it's a parsing error (server returned non-JSON response)
       if (errorMessage.toLowerCase().contains('failed to parse response')) {
@@ -83,7 +99,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> with TickerProv
         }
       } else if (response.statusCode != null && response.statusCode == 500) {
         // Server error but not a parse error
-        errorMessage = 'Server error: ${response.message}';
+        errorMessage = 'Server error: $errorMessage';
       }
       
       ScaffoldMessenger.of(context).showSnackBar(
@@ -106,6 +122,16 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> with TickerProv
  
   
 
+  String _normalizePhoneNumber(String phoneNumber) {
+    final trimmed = phoneNumber.trim();
+    // If phone number starts with "09", remove the leading "0" and add "+251"
+    if (trimmed.startsWith('09')) {
+      return "+251${trimmed.substring(1)}";
+    }
+    // Otherwise, just add "+251" prefix
+    return "+251$trimmed";
+  }
+
   void _forgetPassword() async {
     final apiService = ApiService();
     
@@ -118,7 +144,8 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> with TickerProv
 
     try {
       final response = await apiService.forgetPassword(
-        phone: "+251${(_phoneNumberController.text.trim())}"
+        
+        phone: _normalizePhoneNumber(_phoneNumberController.text)
         
       );
 
@@ -155,7 +182,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> with TickerProv
   void _showOtpDialog(BuildContext context) {
   showDialog(
     context: context,
-    barrierDismissible: true, 
+    barrierDismissible: false, 
     builder: (BuildContext context) {
       return AlertDialog(
         shape: RoundedRectangleBorder(
@@ -239,8 +266,9 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> with TickerProv
   );
 
   try {
+    final normalizedPhone = _normalizePhoneNumber(_phoneNumberController.text);
     final response = await apiService.resendOtp(
-      phoneNumber: "+251${(_phoneNumberController.text.trim())}"
+      phoneNumber: normalizedPhone
     );
 
     // Close loading dialog

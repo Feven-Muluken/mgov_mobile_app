@@ -390,6 +390,41 @@ class ApiService {
     );
   }
 
+  // ========== NOTIFICATIONS API CALLS ==========
+
+  /// Save this phone's push token on the backend (login required)
+  Future<ApiResponse> registerDeviceToken({
+    required String token,
+    required String deviceType,
+    required String accessToken,
+    String? deviceName,
+    String? deviceId,
+  }) async {
+    return await post(
+      ApiConstants.deviceTokenEndpoint,
+      token: accessToken,
+      body: {
+        'token': token,
+        'device_type': deviceType,
+        'device_name': deviceName ?? '',
+        'device_id': deviceId ?? '',
+      },
+    );
+  }
+
+  /// Get the logged-in user's notifications
+  Future<ApiResponse> getNotifications({required String token}) async {
+    return await get(ApiConstants.notificationsListEndpoint, token: token);
+  }
+
+  Future<ApiResponse> markNotificationRead({required int id, required String token}) async {
+    return await post(ApiConstants.notificationMarkReadEndpoint(id), body: {}, token: token);
+  }
+
+  Future<ApiResponse> markAllNotificationsRead({required String token}) async {
+    return await post(ApiConstants.notificationsMarkAllReadEndpoint, body: {}, token: token);
+  }
+
   // ========== EMERGENCY CONTACTS API CALLS ==========
 
   /// Get emergency contacts
